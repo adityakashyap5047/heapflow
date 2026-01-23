@@ -2,12 +2,10 @@
 import React from "react";
 import { FloatingNav } from "@/components/ui/floating-navbar";
 import { IconHome, IconMessage, IconWorldQuestion } from "@tabler/icons-react";
-// import { useAuthStore } from "@/store/Auth";
 import { useSession } from 'next-auth/react';
 import slugify from "@/utils/slugify";
 
 export default function Header() {
-    // const { user } = useAuthStore();
     const { data: session } = useSession();
     console.log("Session in Header:", session);
 
@@ -24,12 +22,12 @@ export default function Header() {
         },
     ];
 
-    // if (user)
-    //     navItems.push({
-    //         name: "Profile",
-    //         link: `/users/${user.$id}/${slugify(user.name)}`,
-    //         icon: <IconMessage className="h-4 w-4 text-neutral-500 dark:text-white" />,
-    //     });
+    if (session && session.user && 'id' in session.user)
+    navItems.push({
+        name: "Profile",
+        link: `/users/${(session.user as { id: string }).id}/${slugify((session.user as { name: string }).name)}`,
+        icon: <IconMessage className="h-4 w-4 text-neutral-500 dark:text-white" />,
+    });
 
     return (
         <div className="relative w-full">

@@ -64,10 +64,9 @@ export default function Register() {
             } else {
                 toast.success('Account created successfully! Logging you in...');
                 const result = await signIn("credentials", {
-                    redirect: true,
+                    redirect: false,
                     email: email.toString().trim(),
                     password: password.toString().trim(),
-                    callbackUrl: "/",
                 })
 
                 if (result?.error) {
