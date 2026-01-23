@@ -7,7 +7,6 @@ import slugify from "@/utils/slugify";
 
 export default function Header() {
     const { data: session } = useSession();
-    console.log("Session in Header:", session);
 
     const navItems = [
         {

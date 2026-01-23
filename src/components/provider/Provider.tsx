@@ -2,6 +2,7 @@
 
 import { SessionProvider } from "next-auth/react";
 import { ThemeProvider } from "./theme-provider";
+import { Toaster } from "sonner";
 
 export default function Provider({ children }: { children: React.ReactNode }) {
     return (
@@ -11,6 +12,7 @@ export default function Provider({ children }: { children: React.ReactNode }) {
                 defaultTheme="dark"
             >
             {children}
+            <Toaster richColors />
             </ThemeProvider>
         </SessionProvider>
     )
