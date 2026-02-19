@@ -37,34 +37,44 @@ model Answer {
   authorId   String
   questionId String
 
-  author   User     @relation(fields: [authorId], references: [id])
-  question Question @relation(fields: [questionId], references: [id])
+  author   User      @relation(fields: [authorId], references: [id])
+  question Question  @relation(fields: [questionId], references: [id])
+  votes    Vote[]
+  comments Comment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Comment {
-  id       String @id @default(cuid())
-  content  String
-  type     Type
-  typeId   String
-  authorId String
+  id         String  @id @default(cuid())
+  content    String
+  type       Type
+  typeId     String
+  authorId   String
+  questionId String?
+  answerId   String?
 
-  author User @relation(fields: [authorId], references: [id])
+  author   User      @relation(fields: [authorId], references: [id])
+  question Question? @relation(fields: [questionId], references: [id])
+  answer   Answer?   @relation(fields: [answerId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([typeId])
 }
 
 model Question {
-  id       String   @id @default(cuid())
+  id       String    @id @default(cuid())
   title    String
   content  String
   tags     String[]
   authorId String
   imageUrl String
   answers  Answer[]
+  votes    Vote[]
+  comments Comment[]
 
   author User @relation(fields: [authorId], references: [id])
 
@@ -73,16 +83,22 @@ model Question {
 }
 
 model Vote {
-  id     String     @id @default(cuid())
-  type   Type
-  typeId String
-  status VoteStatus
-  userId String
+  id         String     @id @default(cuid())
+  type       Type
+  typeId     String
+  status     VoteStatus
+  userId     String
+  questionId String?
+  answerId   String?
 
-  user User @relation(fields: [userId], references: [id])
+  user     User      @relation(fields: [userId], references: [id])
+  question Question? @relation(fields: [questionId], references: [id])
+  answer   Answer?   @relation(fields: [answerId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([typeId])
 }
 
 enum Type {
