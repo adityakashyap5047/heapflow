@@ -26,6 +26,14 @@ const Page = async ({ searchParams }: PageProps) => {
 
     const { questions, total } = result.data;
 
+    if(questions && questions.length === 0){
+        return (
+            <div className="container mx-auto px-4 pb-20 pt-36 md:max-w-3xl">
+                <p className="text-center text-lg">No questions available</p>
+            </div>
+        );
+    }
+
     return (
         <div className="container mx-auto px-4 pb-20 pt-36 md:max-w-3xl">
             <div className="mb-10 flex items-center justify-between">
