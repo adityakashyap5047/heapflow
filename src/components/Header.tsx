@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+
 import { FloatingNav } from "@/components/ui/floating-navbar";
 import { IconHome, IconMessage, IconWorldQuestion } from "@tabler/icons-react";
 import { useSession } from 'next-auth/react';
@@ -7,7 +7,7 @@ import slugify from "@/utils/slugify";
 
 export default function Header() {
     const { data: session } = useSession();
-
+    
     const navItems = [
         {
             name: "Home",

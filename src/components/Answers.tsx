@@ -14,6 +14,7 @@ import Image from "next/image";
 import { toast } from "sonner";
 import { addAnswer, deleteAnswer } from "@/actions/answers";
 import { useReputation } from "@/store/ReputationContext";
+import { useQuestionStatsOptional } from "@/store/QuestionStatsContext";
 
 type AnswerWithRelations = PrismaAnswer & {
     author: User;
@@ -53,6 +54,7 @@ const Answers = ({
 
     const { data: session } = useSession();
     const { getReputation, updateReputation, initializeReputations } = useReputation();
+    const questionStats = useQuestionStatsOptional();
     
     const user = session?.user as { id: string; name?: string; reputation?: number } | undefined;
 
@@ -79,6 +81,9 @@ const Answers = ({
             const newReputation = updatedUser?.reputation || 0;
             
             updateReputation(user.id, newReputation);
+            
+            // Update answer count in question stats
+            questionStats?.incrementAnswerCount();
             
             setNewAnswer(() => "");
             setAnswers(prev => [
@@ -123,6 +128,9 @@ const Answers = ({
             if (user?.id) {
                 updateReputation(user.id, newReputation);
             }
+
+            // Update answer count in question stats
+            questionStats?.decrementAnswerCount();
 
             setAnswers(prev => prev
                 .filter(answer => answer.id !== answerId)
