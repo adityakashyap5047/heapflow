@@ -29,8 +29,8 @@ const Layout = async ({
                         {user?.avatarUrl ?
                             <Image
                                 src={user?.avatarUrl}
-                                height={40}
-                                width={40}
+                                height={200}
+                                width={200}
                                 alt={user?.name}
                                 className="h-full w-full rounded-xl object-cover"
                             /> : <div className="h-30 w-40 rounded-xl object-cover flex items-center justify-center bg-white/20 text-sm">
@@ -43,6 +43,9 @@ const Layout = async ({
                         <div className="block space-y-0.5">
                             <h1 className="text-3xl font-bold">{user?.name}</h1>
                             <p className="text-lg text-gray-500">{user?.email}</p>
+                            {user?.bio && (
+                                <p className="mt-2 text-sm text-gray-400 max-w-md">{user.bio}</p>
+                            )}
                             <p className="flex items-center gap-1 text-sm font-bold text-gray-500">
                                 <IconUserFilled className="w-4 shrink-0" /> Dropped{" "}
                                 {user?.createdAt ? convertDateToRelativeTime(new Date(user.createdAt)) : "Unknown"},

@@ -44,6 +44,7 @@ export async function POST(request: NextRequest) {
         const formData = await request.formData();
         const file = formData.get("file") as File | null;
         const fileName = formData.get("fileName") as string | null;
+        const folder = formData.get("folder") as string | null;
 
         if(!file || !fileName){
             return NextResponse.json({error: "No File or FileName provided"}, {status: 400});
@@ -57,10 +58,13 @@ export async function POST(request: NextRequest) {
 
         const uniqueFileName = `${existingUser.id}/${timestamp}_${sanitizedFileName}`;
 
+        // Default to questions folder, but allow users folder for avatars
+        const uploadFolder = folder === "users" ? "/heapflow/users" : "/heapflow/questions";
+
         const response = await imagekit.upload({
             file: buffer,
             fileName: uniqueFileName,
-            folder: "/heapflow/questions"
+            folder: uploadFolder
         });
 
         const thumbnailUrl = imagekit.url({
