@@ -183,3 +183,75 @@ export async function deleteQuestion(questionId: string) {
         return {success: false, message: error instanceof Error ? `Failed to delete question: ${error.message}` : "Failed to delete question"};
     }
 }
+
+type UpdateQuestionType = {
+    questionId: string;
+    title: string;
+    content: string;
+    tags: string[];
+    imageUrl?: string;
+}
+
+export async function updateQuestion(data: UpdateQuestionType) {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session) {
+            return { success: false, message: "Unauthorized" };
+        }
+
+        const user = session?.user as { id: string } | undefined;
+        if (!user) {
+            return { success: false, message: "Unauthorized" };
+        }
+
+        const existingUser = await db?.user.findUnique({
+            where: {
+                id: user.id,
+            },
+        });
+
+        if (!existingUser) {
+            return { success: false, message: "User not found" };
+        }
+
+        const question = await db?.question.findUnique({
+            where: {
+                id: data.questionId,
+                authorId: existingUser.id,
+            },
+        });
+
+        if (!question) {
+            return { success: false, message: "Question not found or you are not the author" };
+        }
+
+        const updateData: {
+            title: string;
+            content: string;
+            tags: string[];
+            imageUrl?: string;
+        } = {
+            title: data.title,
+            content: data.content,
+            tags: data.tags,
+        };
+
+        if (data.imageUrl !== undefined) {
+            updateData.imageUrl = data.imageUrl;
+        }
+
+        const updatedQuestion = await db?.question.update({
+            where: {
+                id: data.questionId,
+            },
+            data: updateData,
+        });
+
+        return { success: true, data: updatedQuestion };
+    } catch (error) {
+        return {
+            success: false,
+            message: error instanceof Error ? `Failed to update question: ${error.message}` : "Failed to update question"
+        };
+    }
+}

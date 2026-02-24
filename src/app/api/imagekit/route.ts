@@ -98,3 +98,101 @@ export async function POST(request: NextRequest) {
         );
     }
 }
+
+export async function DELETE(request: NextRequest) {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session) {
+            return NextResponse.json(
+                { error: "Unauthorized User" },
+                { status: 401 }
+            );
+        }
+
+        const user = session?.user as { id: string } | undefined;
+        if (!user) {
+            return NextResponse.json(
+                { error: "Unauthorized" },
+                { status: 401 }
+            );
+        }
+
+        const existingUser = await db?.user.findUnique({
+            where: {
+                id: user.id,
+            },
+        });
+
+        if (!existingUser) {
+            return NextResponse.json(
+                { error: "User not found" },
+                { status: 404 }
+            );
+        }
+
+        const body = await request.json();
+        const { url } = body as { url?: string };
+
+        if (!url) {
+            return NextResponse.json(
+                { error: "Image URL is required" },
+                { status: 400 }
+            );
+        }
+
+        const urlPath = new URL(url).pathname;
+
+        if (!urlPath.includes(existingUser.id)) {
+            return NextResponse.json(
+                { error: "You can only delete images you uploaded" },
+                { status: 403 }
+            );
+        }
+
+        const fileName = urlPath.split('/').pop();
+
+        if (!fileName) {
+            return NextResponse.json(
+                { error: "Invalid image URL" },
+                { status: 400 }
+            );
+        }
+
+        const files = await imagekit.listFiles({
+            searchQuery: `name="${fileName}"`,
+            limit: 1,
+            type: "file",
+        });
+
+        if (!files || files.length === 0) {
+            return NextResponse.json(
+                { error: "Image not found in storage" },
+                { status: 404 }
+            );
+        }
+
+        const file = files[0] as { filePath: string; fileId: string };
+        if (!file.filePath.includes(existingUser.id)) {
+            return NextResponse.json(
+                { error: "You can only delete images you uploaded" },
+                { status: 403 }
+            );
+        }
+
+        await imagekit.deleteFile(file.fileId);
+
+        return NextResponse.json(
+            { success: true, message: "Image deleted successfully" },
+            { status: 200 }
+        );
+
+    } catch (error) {
+        console.error("Error deleting image:", error);
+        return NextResponse.json(
+            {
+                error: (error as Error).message || "Unknown error occurred while deleting image."
+            },
+            { status: 500 }
+        );
+    }
+}
