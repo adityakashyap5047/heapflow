@@ -4,9 +4,8 @@ import {
   motion,
   useTransform,
   useScroll,
-  useVelocity,
   useSpring,
-} from "motion/react";
+} from "framer-motion";
 import { cn } from "@/lib/utils";
 
 export const TracingBeam = ({
@@ -36,22 +35,22 @@ export const TracingBeam = ({
     {
       stiffness: 500,
       damping: 90,
-    },
+    }
   );
   const y2 = useSpring(
     useTransform(scrollYProgress, [0, 1], [50, svgHeight - 200]),
     {
       stiffness: 500,
       damping: 90,
-    },
+    }
   );
 
   return (
     <motion.div
       ref={ref}
-      className={cn("relative mx-auto h-full w-full max-w-4xl", className)}
+      className={cn("relative w-full max-w-4xl mx-auto h-full", className)}
     >
-      <div className="absolute top-3 -left-4 md:-left-20">
+      <div className="absolute -left-4 md:-left-20 top-3">
         <motion.div
           transition={{
             duration: 0.2,
@@ -63,7 +62,7 @@ export const TracingBeam = ({
                 ? "none"
                 : "rgba(0, 0, 0, 0.24) 0px 3px 8px",
           }}
-          className="border-netural-200 ml-[27px] flex h-4 w-4 items-center justify-center rounded-full border shadow-sm"
+          className="ml-[27px] h-4 w-4 rounded-full border border-netural-200 shadow-sm flex items-center justify-center"
         >
           <motion.div
             transition={{
@@ -71,17 +70,19 @@ export const TracingBeam = ({
               delay: 0.5,
             }}
             animate={{
-              backgroundColor: scrollYProgress.get() > 0 ? "white" : "#10b981",
-              borderColor: scrollYProgress.get() > 0 ? "white" : "#059669",
+              backgroundColor:
+                scrollYProgress.get() > 0 ? "white" : "var(--emerald-500)",
+              borderColor:
+                scrollYProgress.get() > 0 ? "white" : "var(--emerald-600)",
             }}
-            className="h-2 w-2 rounded-full border border-neutral-300 bg-white"
+            className="h-2 w-2  rounded-full border border-neutral-300 bg-white"
           />
         </motion.div>
         <svg
           viewBox={`0 0 20 ${svgHeight}`}
           width="20"
           height={svgHeight} // Set the SVG height
-          className="ml-4 block"
+          className=" ml-4 block"
           aria-hidden="true"
         >
           <motion.path

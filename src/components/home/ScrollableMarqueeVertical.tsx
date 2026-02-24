@@ -36,7 +36,7 @@ const features = [
 
 export default function ScrollableMarqueeVertical() {
   return (
-    <div className="relative flex w-[600px] h-[1000px] flex-col items-center justify-center overflow-hidden md:p-20 p-7">
+    <div className="relative flex w-150 h-250 flex-col items-center justify-center overflow-hidden md:p-20 p-7">
       <Marquee vertical className="[--duration:25s]">
         {features.map((feature) => (
           <NeonGradientCard
