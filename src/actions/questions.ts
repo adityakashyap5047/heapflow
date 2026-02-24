@@ -167,17 +167,14 @@ export async function deleteQuestion(questionId: string) {
                 authorId: existingUser.id,
             },
         });
-
         if (!question) {
             return {success: false, message: "Question not found or you are not the author"};
         }
-
         await db?.question.delete({
             where: {
                 id: questionId,
             },
         });
-
         return {success: true, data: {message: "Question deleted successfully", status: 200}};
     } catch (error) {
         return {success: false, message: error instanceof Error ? `Failed to delete question: ${error.message}` : "Failed to delete question"};
