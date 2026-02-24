@@ -25,7 +25,7 @@ const HeroSectionHeader = () => {
                         <SparklesText className="text-center text-lg md:text-xl font-medium leading-7 text-gray-300">
                             Join a community of developers to ask questions, share insights, and help others solve coding challenges.
                         </SparklesText>
-                        <LineShadowText className="text-center text-sm md:text-xl text-gray-400 leading-6 italic" shadowColor="white">
+                        <LineShadowText className="text-center text-sm md:text-xl text-gray-400 leading-6 italic">
                             “Sharing knowledge is the most fundamental act of friendship. Because it is a way you can give something without losing something.”
                         </LineShadowText>
                         <p className="text-end text-sm md:text-xl leading-none">
@@ -33,7 +33,6 @@ const HeroSectionHeader = () => {
                         </p>
                     </div>
                 </div>
-
             </div>
             <div className="hidden md:flex"><ScrollableMarquee /></div>
             <div className="flex md:hidden justify-center items-center"><ScrollableMarqueeVertical /></div>

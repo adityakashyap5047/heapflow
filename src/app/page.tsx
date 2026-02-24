@@ -1,13 +1,25 @@
-import Image from 'next/image'
-import React from 'react'
+import HeroSection from "@/components/home/HeroSection";
+import HeroSectionHeader from "@/components/home/HeroSectionHeader";
+import LatestQuestions from "@/components/home/LatestQuestions";
+import TopContributers from "@/components/home/TopContributors";
 
-const HomePage = () => {
+export default function Home() {
   return (
-    <div>
-      <Image src={"/HeapFlow.png"} alt='HeapFlow' height={500} width={500} />
-      <h1>Welcome to HeapFlow</h1>
-    </div>
-  )
-}
+    <>
+      <HeroSectionHeader />
+      <HeroSection />
 
-export default HomePage
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 p-8">
+        <div className="col-span-1 lg:col-span-2">
+          <p className="text-2xl py-4">Questions</p>
+          <LatestQuestions />
+        </div>
+
+        <div className="col-span-2 lg:col-span-1">
+          <p className="text-2xl py-4">Contributers</p>
+          <TopContributers />
+        </div>
+      </div>
+    </>
+  );
+}
