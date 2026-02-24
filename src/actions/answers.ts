@@ -81,6 +81,10 @@ export async function deleteAnswer(answerId: string) {
             }
         });
 
+        if(!answer){
+            return {success: false, message: "Answer not found"};
+        }
+
         if(answer?.authorId !== existingUser.id) {
             return {success: false, message: "You are not authorized to delete this answer"};
         }

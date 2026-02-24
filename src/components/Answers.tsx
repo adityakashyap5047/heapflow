@@ -9,10 +9,11 @@ import { cn } from "@/lib/utils";
 import RTE, { MarkdownPreview } from "./RTE";
 import { useSession } from "next-auth/react";
 import type { Answer as PrismaAnswer, User, Vote, Comment } from "@prisma/client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { addAnswer, deleteAnswer } from "@/actions/answers";
+import { useReputation } from "@/store/ReputationContext";
 
 type AnswerWithRelations = PrismaAnswer & {
     author: User;
@@ -51,8 +52,14 @@ const Answers = ({
     const [error, setError] = useState("");
 
     const { data: session } = useSession();
+    const { getReputation, updateReputation, initializeReputations } = useReputation();
     
     const user = session?.user as { id: string; name?: string; reputation?: number } | undefined;
+
+    useEffect(() => {
+        const users = _answers.map(a => ({ id: a.author.id, reputation: a.author.reputation }));
+        initializeReputations(users);
+    }, [_answers, initializeReputations]);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -70,6 +77,9 @@ const Answers = ({
             const answer = answerData.data.answer;
             const updatedUser = answerData.data.updatedUser;
             const newReputation = updatedUser?.reputation || 0;
+            
+            updateReputation(user.id, newReputation);
+            
             setNewAnswer(() => "");
             setAnswers(prev => [
                 {
@@ -110,6 +120,10 @@ const Answers = ({
             const updatedUser = response.data.updatedUser;
             const newReputation = updatedUser?.reputation || 0;
 
+            if (user?.id) {
+                updateReputation(user.id, newReputation);
+            }
+
             setAnswers(prev => prev
                 .filter(answer => answer.id !== answerId)
                 .map(a => 
@@ -118,6 +132,7 @@ const Answers = ({
                         : a
                 )
             );
+            toast.error("Answer deleted successfully");
         } catch (error) {
             if (error instanceof Error) {
                 toast.error("Error deleting answer");
@@ -171,7 +186,7 @@ const Answers = ({
                                     {answer.author.name}
                                 </Link>
                                 <p>
-                                    <strong>{answer.author.reputation}</strong>
+                                    <strong>{getReputation(answer.author.id, answer.author.reputation)}</strong>
                                 </p>
                             </div>
                         </div>
