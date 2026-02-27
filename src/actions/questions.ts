@@ -4,6 +4,7 @@ import { db } from "@/lib/prisma";
 import { authOptions } from "@/store/Auth";
 import { getServerSession } from "next-auth";
 import { Prisma } from "@prisma/client";
+import { unstable_noStore as noStore } from "next/cache";
 
 type QuestionType = {
     title: string;
@@ -58,6 +59,7 @@ type GetQuestionsParams = {
 };
 
 export async function getQuestions({ page = 1, limit = 10, tag, search }: GetQuestionsParams = {}) {
+    noStore();
     try {
         const skip = (page - 1) * limit;
 
