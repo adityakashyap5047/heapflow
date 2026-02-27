@@ -212,3 +212,23 @@ export async function changePassword(data: ChangePasswordType) {
         };
     }
 }
+
+export async function getTopContributors(limit: number = 8) {
+    try {
+        const contributors = await db?.user.findMany({
+            orderBy: { reputation: "desc" },
+            take: limit,
+        });
+
+        if(!contributors || contributors.length === 0){
+            return { success: false, message: "No contributors found" };
+        }
+
+        return { success: true, data: contributors };
+    } catch (error) {
+        return {
+            success: false,
+            message: error instanceof Error ? `Failed to get top contributors: ${error.message}` : "Failed to get top contributors",
+        }; 
+    }
+}

@@ -1,12 +1,10 @@
 import slugify from "@/utils/slugify";
 import { HeroParallax } from "@/components/ui/hero-parallax";
-import { db } from "@/lib/prisma";
+import { getQuestions } from "@/actions/questions";
 
 export default async function HeroSection() {
-    const questions = await db.question.findMany({
-        orderBy: { createdAt: "desc" },
-        take: 15,
-    });
+    const result = await getQuestions({ page: 1, limit: 15,});
+    const questions = result.success && result.data ? result.data.questions : [];
 
     return (
         <HeroParallax

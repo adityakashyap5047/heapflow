@@ -4,8 +4,8 @@ import convertDateToRelativeTime from "@/utils/relativeTime";
 import { AnimatedList } from "@/components/magicui/animated-list";
 import Image from "next/image";
 import type { User as PrismaUser } from "@prisma/client";
-import { db } from "@/lib/prisma";
 import slugify from "@/utils/slugify";
+import { getTopContributors } from "@/actions/users";
 
 const Notification = ({ user }: { user: PrismaUser }) => {
     return (
@@ -53,10 +53,8 @@ const Notification = ({ user }: { user: PrismaUser }) => {
 };
 
 export default async function TopContributers() {
-    const topUsers = await db.user.findMany({
-        orderBy: { reputation: "desc" },
-        take: 8,
-    });
+    const result = await getTopContributors();
+    const topUsers = result.success && result.data ? result.data : [];
 
     return (
         <div className="flex">

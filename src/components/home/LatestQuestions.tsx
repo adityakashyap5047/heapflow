@@ -1,15 +1,10 @@
 import React from "react";
 import QuestionCard from "../question/QuestionCard";
-import { db } from "@/lib/prisma";
+import { getQuestions } from "@/actions/questions";
 
 const LatestQuestions = async () => {
-    const questions = await db.question.findMany({
-        orderBy: { createdAt: "desc" },
-        take: 4,
-        include: {
-            author: true,
-        }
-    });
+    const result = await getQuestions({ page: 1, limit: 4,});
+    const questions = result.success && result.data ? result.data.questions : [];
     return (
         <div className="space-y-6">
             {questions.map(question => (
