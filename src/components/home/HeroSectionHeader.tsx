@@ -8,7 +8,7 @@ import ScrollableMarqueeVertical from "./ScrollableMarqueeVertical";
 const HeroSectionHeader = () => {
 
     return (
-        <div className="container mx-auto px-4 py-10 min-h-screen">
+        <div className="container mx-auto px-4 py-10">
             <Particles
                 className="fixed inset-0 h-full w-full"
                 quantity={500}
