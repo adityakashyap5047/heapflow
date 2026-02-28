@@ -29,28 +29,28 @@ export default function AboutPage() {
                         <h2 className="text-2xl font-semibold mb-4">What We Offer</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                             <div className="p-6 rounded-lg border border-white/10 bg-white/5">
-                                <h3 className="text-xl font-semibold mb-3">🤔 Ask Questions</h3>
+                                <h3 className="text-xl font-semibold mb-3">Ask Questions</h3>
                                 <p className="text-muted-foreground">
                                     Stuck on a problem? Post your question and get help from experienced developers
                                     in the community. No question is too basic or too complex.
                                 </p>
                             </div>
                             <div className="p-6 rounded-lg border border-white/10 bg-white/5">
-                                <h3 className="text-xl font-semibold mb-3">💡 Share Knowledge</h3>
+                                <h3 className="text-xl font-semibold mb-3">Share Knowledge</h3>
                                 <p className="text-muted-foreground">
                                     Help others by answering questions. Share your expertise and contribute to the
                                     collective knowledge of the developer community.
                                 </p>
                             </div>
                             <div className="p-6 rounded-lg border border-white/10 bg-white/5">
-                                <h3 className="text-xl font-semibold mb-3">⬆️ Vote & Curate</h3>
+                                <h3 className="text-xl font-semibold mb-3">Vote & Curate</h3>
                                 <p className="text-muted-foreground">
                                     Upvote helpful answers and questions to highlight the best content. Our voting
                                     system ensures quality solutions rise to the top.
                                 </p>
                             </div>
                             <div className="p-6 rounded-lg border border-white/10 bg-white/5">
-                                <h3 className="text-xl font-semibold mb-3">🏆 Build Reputation</h3>
+                                <h3 className="text-xl font-semibold mb-3">Build Reputation</h3>
                                 <p className="text-muted-foreground">
                                     Earn reputation points for your contributions. Your reputation reflects your
                                     expertise and involvement in the community.
@@ -63,7 +63,6 @@ export default function AboutPage() {
                         <h2 className="text-2xl font-semibold mb-4">Our Values</h2>
                         <ul className="space-y-4">
                             <li className="flex items-start gap-3">
-                                <span className="text-2xl">🤝</span>
                                 <div>
                                     <h3 className="font-semibold">Inclusivity</h3>
                                     <p className="text-muted-foreground">
@@ -73,7 +72,6 @@ export default function AboutPage() {
                                 </div>
                             </li>
                             <li className="flex items-start gap-3">
-                                <span className="text-2xl">📚</span>
                                 <div>
                                     <h3 className="font-semibold">Knowledge Sharing</h3>
                                     <p className="text-muted-foreground">
@@ -83,7 +81,6 @@ export default function AboutPage() {
                                 </div>
                             </li>
                             <li className="flex items-start gap-3">
-                                <span className="text-2xl">✨</span>
                                 <div>
                                     <h3 className="font-semibold">Quality</h3>
                                     <p className="text-muted-foreground">
@@ -93,7 +90,6 @@ export default function AboutPage() {
                                 </div>
                             </li>
                             <li className="flex items-start gap-3">
-                                <span className="text-2xl">🌱</span>
                                 <div>
                                     <h3 className="font-semibold">Growth</h3>
                                     <p className="text-muted-foreground">

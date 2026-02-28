@@ -78,6 +78,7 @@ export async function deleteAnswer(answerId: string) {
             },
             include: {
                 author: true,
+                votes: true,
             }
         });
 
@@ -89,22 +90,47 @@ export async function deleteAnswer(answerId: string) {
             return {success: false, message: "You are not authorized to delete this answer"};
         }
 
-        const deletedAnswer = await db?.answer.delete({
-            where: {
-                id: answerId,
-            },
+        // Use a transaction to ensure all operations succeed or fail together
+        const result = await db?.$transaction(async (tx) => {
+            // Calculate reputation adjustment from votes
+            let reputationAdjustment = -1; // -1 for losing the answer itself
+            
+            for (const vote of answer.votes) {
+                // Reverse the vote effect
+                reputationAdjustment += vote.status === "upvoted" ? -1 : 1;
+            }
+
+            // Delete votes on this answer
+            await tx.vote.deleteMany({
+                where: { answerId },
+            });
+
+            // Delete comments on this answer
+            await tx.comment.deleteMany({
+                where: { answerId },
+            });
+
+            // Delete the answer
+            const deletedAnswer = await tx.answer.delete({
+                where: {
+                    id: answerId,
+                },
+            });
+
+            // Update author's reputation
+            const updatedUser = await tx.user.update({
+                where: {
+                    id: existingUser.id,
+                },
+                data: {
+                    reputation: Math.max(0, (existingUser.reputation || 0) + reputationAdjustment),
+                },
+            });
+
+            return { deletedAnswer, updatedUser };
         });
 
-        const updatedUser = await db?.user.update({
-            where: {
-                id: existingUser.id,
-            },
-            data: {
-                reputation: Math.max(0, (existingUser.reputation || 0) - 1),
-            },
-        });
-
-        return {success: true, message: "Answer deleted successfully", data: {deletedAnswer, updatedUser}};
+        return {success: true, message: "Answer deleted successfully", data: result};
     } catch (error) {
         return {success: false, message: error instanceof Error ? `Failed to delete answer: ${error.message}` : "Failed to delete answer"};
     }

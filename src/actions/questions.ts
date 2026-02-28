@@ -168,15 +168,100 @@ export async function deleteQuestion(questionId: string) {
                 id: questionId,
                 authorId: existingUser.id,
             },
+            include: {
+                answers: {
+                    include: {
+                        votes: true,
+                    },
+                },
+                votes: true,
+            },
         });
         if (!question) {
             return {success: false, message: "Question not found or you are not the author"};
         }
-        await db?.question.delete({
-            where: {
-                id: questionId,
-            },
+
+        // Use a transaction to ensure all operations succeed or fail together
+        await db?.$transaction(async (tx) => {
+            // Track reputation adjustments by user
+            const reputationAdjustments: Map<string, number> = new Map();
+
+            // 1. Handle votes on the question - adjust question author's reputation
+            for (const vote of question.votes) {
+                const adjustment = vote.status === "upvoted" ? -1 : 1;
+                const currentAdjustment = reputationAdjustments.get(question.authorId) || 0;
+                reputationAdjustments.set(question.authorId, currentAdjustment + adjustment);
+            }
+
+            // 2. Handle answers and their related data
+            for (const answer of question.answers) {
+                // Handle votes on answers - adjust answer author's reputation
+                for (const vote of answer.votes) {
+                    const adjustment = vote.status === "upvoted" ? -1 : 1;
+                    const currentAdjustment = reputationAdjustments.get(answer.authorId) || 0;
+                    reputationAdjustments.set(answer.authorId, currentAdjustment + adjustment);
+                }
+
+                // Decrease reputation for answer author (they lose reputation for their answer)
+                const currentAdjustment = reputationAdjustments.get(answer.authorId) || 0;
+                reputationAdjustments.set(answer.authorId, currentAdjustment - 1);
+
+                // Delete votes on this answer
+                await tx.vote.deleteMany({
+                    where: { answerId: answer.id },
+                });
+
+                // Delete comments on this answer
+                await tx.comment.deleteMany({
+                    where: { answerId: answer.id },
+                });
+            }
+
+            // 3. Delete all answers for this question
+            await tx.answer.deleteMany({
+                where: { questionId },
+            });
+
+            // 4. Delete votes on the question
+            await tx.vote.deleteMany({
+                where: { questionId },
+            });
+
+            // 5. Delete comments on the question
+            await tx.comment.deleteMany({
+                where: { questionId },
+            });
+
+            // 6. Apply all reputation adjustments
+            for (const [userId, adjustment] of reputationAdjustments) {
+                if (adjustment !== 0) {
+                    await tx.user.update({
+                        where: { id: userId },
+                        data: {
+                            reputation: {
+                                increment: adjustment,
+                            },
+                        },
+                    });
+                }
+            }
+
+            // Ensure reputation doesn't go below 0
+            await tx.user.updateMany({
+                where: {
+                    reputation: { lt: 0 },
+                },
+                data: {
+                    reputation: 0,
+                },
+            });
+
+            // 7. Finally delete the question
+            await tx.question.delete({
+                where: { id: questionId },
+            });
         });
+
         return {success: true, data: {message: "Question deleted successfully", status: 200}};
     } catch (error) {
         return {success: false, message: error instanceof Error ? `Failed to delete question: ${error.message}` : "Failed to delete question"};
